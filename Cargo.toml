@@ -1,0 +1,22 @@
+[package]
+name = "RustMiniSLAM"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+# File IO
+image = "0.24.6"
+
+# Logging
+tracing = "0.1.37"
+tracing-subscriber = "0.3.16"
+
+# Window
+minifb = "0.24.0"
+
+# video parser 
+ffmpeg = "0.3.0"
+ffmpeg-sys = { version = "4", features = ["build"] }
