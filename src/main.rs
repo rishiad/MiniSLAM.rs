@@ -1,5 +1,7 @@
-mod data_acquisition;
+mod data_loaders;
+mod feature_extraction;
 mod utils;
+mod overlay;
 
 use std::{env}; 
 use minifb::{Window, WindowOptions, Key};
@@ -22,14 +24,15 @@ fn main() {
     event!(Level::INFO, "Loading video from {}", path);
 
     event!(Level::INFO, "Loading video frames and timestamps...");
-    let cam_video = data_acquisition::image_loader::stero_img_loader(&path).expect("Failed to load video frames and timestamps from given path");
+    let cam_video = data_loaders::image_loader::stero_img_loader(&path).expect("Failed to load video frames and timestamps from given path");
     
     // Display images and timestamps in a minifb window 
     event!(Level::INFO, "Setting up cam0 window");
     let mut cam0_window = Window::new("cam0", cam_video[0].1.width() as usize, cam_video[0].1.height() as usize, WindowOptions::default()).unwrap();
     
     for (t0, cam0_img) in cam_video.iter() {
-        let cam0_buffer = utils::buffer_converter::gray_imagto_minifb_buffer(&cam0_img);
+        let overlayed_img = overlay::overlay::image_overlay(cam0_img.clone(), t0.clone().unwrap()).unwrap();
+        let cam0_buffer = utils::buffer_converter::gray_imagto_minifb_buffer(&overlayed_img);
         event!(Level::INFO, "cam0 timestamp: {:?}", t0);
         cam0_window.update_with_buffer(&cam0_buffer, cam0_img.width() as usize, cam0_img.height() as usize).unwrap();
     

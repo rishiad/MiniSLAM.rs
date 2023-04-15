@@ -9,6 +9,7 @@ edition = "2021"
 
 # File IO
 image = "0.24.6"
+imageproc = "0.23.0"
 
 # Logging
 tracing = "0.1.37"
@@ -19,4 +20,9 @@ minifb = "0.24.0"
 
 # video parser 
 ffmpeg = "0.3.0"
-ffmpeg-sys = { version = "4", features = ["build"] }
+ffmpeg-sys = {version = "4.3.3", features = ["build"]}
+# OpenCV
+opencv = "0.79.0"
+
+# Type Utils
+rusttype = "0.9.3"
