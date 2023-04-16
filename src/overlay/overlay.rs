@@ -1,7 +1,7 @@
 use image::{GrayImage, Luma};
+use opencv::{core::{Vector, KeyPoint}, prelude::KeyPointTraitConst};
 
-pub fn image_overlay( mut img: GrayImage, frame_count: i64 ) -> Result<image::GrayImage, Box<dyn std::error::Error>> {
-    let (width, height) = img.dimensions();
+pub fn image_overlay( mut img: GrayImage, frame_count: i64, keypoints: Vector<KeyPoint> ) -> Result<image::GrayImage, Box<dyn std::error::Error>> {
     let frame_count_str = frame_count.to_string();
 
     let offset_x = 5; // Adjust this value to change the horizontal position of the text
@@ -19,6 +19,14 @@ pub fn image_overlay( mut img: GrayImage, frame_count: i64 ) -> Result<image::Gr
         &frame_count_str
 
     );
+
+    for kp in keypoints.iter() {
+        let x = kp.pt().x as i32;
+        let y = kp.pt().y as i32;
+        let rect = imageproc::rect::Rect::at(x, y).of_size(5, 5);
+        let color = image::Luma([255u8]);
+        imageproc::drawing::draw_hollow_rect_mut(&mut img, rect, color);
+    };
 
     Ok(img)
 }

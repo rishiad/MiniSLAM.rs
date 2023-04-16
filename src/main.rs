@@ -31,9 +31,12 @@ fn main() {
     let mut cam0_window = Window::new("cam0", cam_video[0].1.width() as usize, cam_video[0].1.height() as usize, WindowOptions::default()).unwrap();
     
     for (t0, cam0_img) in cam_video.iter() {
-        let overlayed_img = overlay::overlay::image_overlay(cam0_img.clone(), t0.clone().unwrap()).unwrap();
+        let fast_keypoints = feature_extraction::fast_detector::get_fast_keypoints(&cam0_img).unwrap();
+        let debug_keypoints = utils::debug_converter::convert_keypoints_to_tuples(&fast_keypoints);
+        // event!(Level::INFO, "FAST keypoints: {:?}", debug_keypoints);
+        let overlayed_img = overlay::overlay::image_overlay(cam0_img.clone(), t0.clone().unwrap(), fast_keypoints).unwrap();
         let cam0_buffer = utils::buffer_converter::gray_imagto_minifb_buffer(&overlayed_img);
-        event!(Level::INFO, "cam0 timestamp: {:?}", t0);
+        event!(Level::INFO, "cam0 timestamp: {:?}", t0.unwrap());
         cam0_window.update_with_buffer(&cam0_buffer, cam0_img.width() as usize, cam0_img.height() as usize).unwrap();
     
         if cam0_window.is_key_down(Key::Escape) {
