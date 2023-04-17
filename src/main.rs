@@ -1,10 +1,13 @@
 mod data_loaders;
 mod feature_extraction;
+mod mapping;
+
 mod utils;
 mod overlay;
 
 use std::{env}; 
 use minifb::{Window, WindowOptions, Key};
+use opencv::core::{Vector, KeyPoint};
 use tracing::{event, Level};
 use tracing_subscriber;
 
@@ -33,8 +36,10 @@ fn main() {
     for (t0, cam0_img) in cam_video.iter() {
         let fast_keypoints = feature_extraction::fast_detector::get_fast_keypoints(&cam0_img).unwrap();
         let debug_keypoints = utils::debug_converter::convert_keypoints_to_tuples(&fast_keypoints);
+        let harris_corner_response = feature_extraction::harris_corner::harris_corner_response(&fast_keypoints, 3, &cam0_img).unwrap();
+        let filtered_keypoints = harris_corner_response.iter().take(200).clone().collect::<Vector<KeyPoint>>();
         // event!(Level::INFO, "FAST keypoints: {:?}", debug_keypoints);
-        let overlayed_img = overlay::overlay::image_overlay(cam0_img.clone(), t0.clone().unwrap(), fast_keypoints).unwrap();
+        let overlayed_img = overlay::overlay::image_overlay(cam0_img.clone(), t0.clone().unwrap(), fast_keypoints,filtered_keypoints).unwrap();
         let cam0_buffer = utils::buffer_converter::gray_imagto_minifb_buffer(&overlayed_img);
         event!(Level::INFO, "cam0 timestamp: {:?}", t0.unwrap());
         cam0_window.update_with_buffer(&cam0_buffer, cam0_img.width() as usize, cam0_img.height() as usize).unwrap();
